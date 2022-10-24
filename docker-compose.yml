@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+  
+  udp-packet-forwarder:
+    image: rakwireless/udp-packet-forwarder:latest
+    container_name: udp-packet-forwarder
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    labels:
+      io.balena.features.supervisor-api: '1'
+      io.balena.features.balena-api: '1'
+
+  wifi-connect:
+    build: ./wifi-connect
+    container_name: wifi-connect
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    environment:
+      DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/host/run/dbus/system_bus_socket"
+    
+    # Required if running outside BalenaOS
+    #volumes:
+    #  - /run/dbus/system_bus_socket:/host/run/dbus/system_bus_socket
+    
+    # Required if running inside BalenaOS
+    labels:
+      io.balena.features.dbus: '1'
+      io.balena.features.supervisor-api: '1'
+      io.balena.features.balena-api: '1'
+    
